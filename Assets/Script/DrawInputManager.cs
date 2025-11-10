@@ -10,6 +10,7 @@ public class DrawInputManager : MonoBehaviour
     public LineRenderer lineRenderer;
     private List<Vector2> points;
     private Camera mainCamera;
+    private Animator playerAnimator;
 
     void Start()
     {
@@ -21,38 +22,37 @@ public class DrawInputManager : MonoBehaviour
             lineRenderer = GetComponent<LineRenderer>();
         }
         lineRenderer.positionCount = 0;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerAnimator = player.GetComponent<Animator>();
+        }
     }
 
     void Update()
     {
-        // THAY ĐỔI: Lấy MỖI CHUỘT
         Mouse mouse = Mouse.current;
 
-        // Bỏ qua nếu không có chuột
         if (mouse == null) return;
 
-        // 1. Khi bắt đầu nhấn chuột TRÁI
         if (mouse.leftButton.wasPressedThisFrame)
         {
             StartDrawing();
         }
 
-        // 2. Khi đang giữ chuột TRÁI
         if (mouse.leftButton.isPressed)
         {
-            // Lấy vị trí của chuột
             Vector2 screenPosition = mouse.position.ReadValue();
             ContinueDrawing(screenPosition);
         }
 
-        // 3. Khi thả chuột TRÁI
         if (mouse.leftButton.wasReleasedThisFrame)
         {
             StopDrawing();
         }
     }
 
-    // (Phần còn lại của code giữ nguyên y hệt)
 
     void StartDrawing()
     {
@@ -80,6 +80,7 @@ public class DrawInputManager : MonoBehaviour
 
             if (recognizedShape != "unknown")
             {
+                TriggerPlayerAttack();
                 BroadcastSymbol(recognizedShape);
             }
         }
@@ -118,7 +119,7 @@ public class DrawInputManager : MonoBehaviour
         float height = maxY - minY;
 
         float aspectRatio = width / height;
-        if (aspectRatio < 0.3f) return "|"; 
+        if (aspectRatio < 0.3f) return "|";
         if (aspectRatio > 3.0f) return "-";
 
         Vector2 lowestPoint = points.OrderBy(p => p.y).First();
@@ -140,7 +141,7 @@ public class DrawInputManager : MonoBehaviour
         {
             return "V";
         }
-        
+
         if (isApex(leftmostPoint) && start.x > leftmostPoint.x && end.x > leftmostPoint.x)
         {
             return "<";
@@ -152,5 +153,14 @@ public class DrawInputManager : MonoBehaviour
         }
 
         return "unknown";
+    }
+    
+
+    void TriggerPlayerAttack()
+    {
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetTrigger("Attack");
+        }
     }
 }

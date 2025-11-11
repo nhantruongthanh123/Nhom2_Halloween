@@ -12,6 +12,7 @@ public class Ghost : MonoBehaviour
     public TextMeshPro symbolText;
     public float moveSpeed = 2f;
     private Animator animator;
+    private float timeAlive = 0f;
 
     void Awake()
     {
@@ -25,7 +26,11 @@ public class Ghost : MonoBehaviour
     }
     void Update()
     {
-        transform.Translate(Vector2.left * moveSpeed * Time.deltaTime);
+        if (moveSpeed > 0)
+        {
+            transform.Translate(Vector2.left * moveSpeed * Time.deltaTime);
+            timeAlive += Time.deltaTime;
+        }
     }
 
     public void DestroyGhost()
@@ -69,21 +74,19 @@ public class Ghost : MonoBehaviour
                 Die();
             }
         }
-        else
-        {
-            Debug.Log("Vẽ sai ký hiệu!");
-        }
     }
     
     private void Die()
     {
+        GameManager.instance.ReportKill(timeAlive);
         moveSpeed = 0; 
         
         if (GetComponent<Collider2D>() != null)
         {
             GetComponent<Collider2D>().enabled = false; 
         }
-        
+
         animator.SetTrigger("isDie"); 
+        
     }
 }

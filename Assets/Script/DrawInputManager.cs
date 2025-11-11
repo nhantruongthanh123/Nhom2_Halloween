@@ -76,7 +76,6 @@ public class DrawInputManager : MonoBehaviour
         if (points.Count > 5) 
         {
             string recognizedShape = RecognizeShape(points);
-            Debug.Log("Shape Recognized: " + recognizedShape);
 
             if (recognizedShape != "unknown")
             {

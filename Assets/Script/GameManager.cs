@@ -1,11 +1,14 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI streakText;
+    public GameObject gameOverPanel;
+    public GameObject pauseButton;
     
     // Point when killing a ghost
     public int maxPoint = 50;
@@ -112,12 +115,85 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (streakText != null) streakText.gameObject.SetActive(false);
         StartCoroutine(WaitAndStopTime());
+        
     }
     private System.Collections.IEnumerator WaitAndStopTime()
     {
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(1.2f);
         Time.timeScale = 0;
+        pauseButton.SetActive(false);
+        Ghost[] allGhosts = FindObjectsByType<Ghost>(FindObjectsSortMode.None);
+        foreach (Ghost ghost in allGhosts)
+        {
+            ghost.gameObject.SetActive(false); 
+        }
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+    
+    }
+
+    public void RetryGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("menuScene");
+    }
+
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "playScene") 
+        {
+            FindUIElements();
+            ResetGame();
+        }
+    }
+
+    void FindUIElements()
+    {
+        GameObject scoreTextGO = GameObject.Find("Score");
+        if (scoreTextGO != null)
+        {
+            scoreText = scoreTextGO.GetComponent<TextMeshProUGUI>();
+        }
+
+        GameObject streakTextGO = GameObject.Find("Streak");
+        if (streakTextGO != null)
+        {
+            streakText = streakTextGO.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (scoreText == null) Debug.LogError("GameManager: Không tìm thấy 'Score' Text!");
+        if (streakText == null) Debug.LogError("GameManager: Không tìm thấy 'Streak' Text!");
+    }
+
+    void ResetGame()
+    {
+        score = 0;
+        currentStreak = 0;
+        currentStreakTimer = 0;
+        UpdateScoreDisplay();
+        UpdateStreakDisplay(false);
+        Time.timeScale = 1f;
     }
 
 }

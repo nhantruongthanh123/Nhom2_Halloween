@@ -118,7 +118,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -1483407423975865499, guid: 56c38c2f6bdfad44388617168d08cd4c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
@@ -171,22 +171,23 @@ MonoBehaviour:
   symbolDatabase:
   - symbolName: 
     symbolSprite: {fileID: 2016585050871268627, guid: aa93e1787f528b64a9caee425679db66, type: 3}
-    symbolColor: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+    symbolColor: {r: 1, g: 1, b: 1, a: 1}
   - symbolName: 
     symbolSprite: {fileID: 8258370961159570181, guid: 8ed9121448fda7a42aa1bf272a19080a, type: 3}
-    symbolColor: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+    symbolColor: {r: 1, g: 1, b: 1, a: 1}
   - symbolName: 
     symbolSprite: {fileID: 149184955402956696, guid: f22124a704efd9d468f3b54994d31562, type: 3}
-    symbolColor: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+    symbolColor: {r: 1, g: 1, b: 1, a: 1}
   - symbolName: 
     symbolSprite: {fileID: -2949373007525200634, guid: 1e9ad5eba5f5f8542b628dd3e4620b2b, type: 3}
-    symbolColor: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+    symbolColor: {r: 1, g: 1, b: 1, a: 1}
   - symbolName: 
     symbolSprite: {fileID: 4901327918020809582, guid: 8899af033bca4004a87e8ba02d9d4482, type: 3}
-    symbolColor: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+    symbolColor: {r: 1, g: 1, b: 1, a: 1}
   - symbolName: 
     symbolSprite: {fileID: 214970892047802214, guid: 6f1cc63353d385643a6aa265c82832b4, type: 3}
-    symbolColor: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+    symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  symbolSpacing: 0.8
 --- !u!50 &-5426604326697929503
 Rigidbody2D:
   serializedVersion: 5

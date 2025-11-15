@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-
-// Thư viện Input System
 using UnityEngine.InputSystem;
 
 public class DrawInputManager : MonoBehaviour
@@ -33,7 +31,6 @@ public class DrawInputManager : MonoBehaviour
     void Update()
     {
         Mouse mouse = Mouse.current;
-
         if (mouse == null) return;
 
         if (mouse.leftButton.wasPressedThisFrame)
@@ -52,7 +49,6 @@ public class DrawInputManager : MonoBehaviour
             StopDrawing();
         }
     }
-
 
     void StartDrawing()
     {
@@ -75,12 +71,13 @@ public class DrawInputManager : MonoBehaviour
     {
         if (points.Count > 5) 
         {
-            string recognizedShape = RecognizeShape(points);
+            int recognizedIndex = RecognizeShape(points);
+            Debug.Log("Shape Recognized Index: " + recognizedIndex);
 
-            if (recognizedShape != "unknown")
+            if (recognizedIndex != -1)
             {
                 TriggerPlayerAttack();
-                BroadcastSymbol(recognizedShape);
+                BroadcastSymbol(recognizedIndex); 
             }
         }
         
@@ -97,17 +94,18 @@ public class DrawInputManager : MonoBehaviour
         }
     }
 
-    void BroadcastSymbol(string symbol)
+    void BroadcastSymbol(int symbolIndex)
     {
         Ghost[] allGhosts = FindObjectsByType<Ghost>(FindObjectsSortMode.None);
         foreach (Ghost ghost in allGhosts)
         {
-            ghost.ProcessDrawnSymbol(symbol);
+            ghost.ProcessDrawnSymbol(symbolIndex);
         }
     }
 
-    private string RecognizeShape(List<Vector2> points)
+    private int RecognizeShape(List<Vector2> points)
     {
+
         Vector2 start = points[0];
         Vector2 end = points[points.Count - 1];
         float minX = points.Min(p => p.x);
@@ -116,44 +114,56 @@ public class DrawInputManager : MonoBehaviour
         float maxY = points.Max(p => p.y);
         float width = maxX - minX;
         float height = maxY - minY;
+        
+        float size = Mathf.Max(width, height); 
+        float aspectRatio = width / (height + 0.001f); 
 
-        float aspectRatio = width / height;
-        if (aspectRatio < 0.3f) return "|";
-        if (aspectRatio > 3.0f) return "-";
+
+        if (aspectRatio < 0.3f && height > size * 0.7f) return 0;
+
+
+        if (aspectRatio > 3.0f && width > size * 0.7f) return 1;
+
+
+        float startEndDist = Vector2.Distance(start, end);
+        if (aspectRatio > 0.7f && aspectRatio < 1.3f && startEndDist < size * 0.3f)
+        {
+            return 5;
+        }
+        
+
+        List<Vector2> peaks = new List<Vector2>();
+        List<Vector2> valleys = new List<Vector2>();
+        for (int i = 1; i < points.Count - 1; i++)
+        {
+            if (points[i].y > points[i-1].y && points[i].y > points[i+1].y) peaks.Add(points[i]);
+            if (points[i].y < points[i-1].y && points[i].y < points[i+1].y) valleys.Add(points[i]);
+        }
+
+        if (valleys.Count >= 2 && peaks.Count >= 1)
+        {
+            return 4;
+        }
+
 
         Vector2 lowestPoint = points.OrderBy(p => p.y).First();
         Vector2 highestPoint = points.OrderByDescending(p => p.y).First();
-        Vector2 leftmostPoint = points.OrderBy(p => p.x).First();
-        Vector2 rightmostPoint = points.OrderByDescending(p => p.x).First();
 
-        bool isApex(Vector2 apex)
-        {
-            return apex != start && apex != end;
-        }
+        bool isApex(Vector2 apex) { return apex != start && apex != end; }
+
 
         if (isApex(highestPoint) && start.y < highestPoint.y && end.y < highestPoint.y)
         {
-            return "^";
+            return 3;
         }
 
         if (isApex(lowestPoint) && start.y > lowestPoint.y && end.y > lowestPoint.y)
         {
-            return "V";
+            return 2;
         }
-
-        if (isApex(leftmostPoint) && start.x > leftmostPoint.x && end.x > leftmostPoint.x)
-        {
-            return "<";
-        }
-
-        if (isApex(rightmostPoint) && start.x < rightmostPoint.x && end.x < rightmostPoint.x)
-        {
-            return ">";
-        }
-
-        return "unknown";
+        
+        return -1; 
     }
-    
 
     void TriggerPlayerAttack()
     {

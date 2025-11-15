@@ -10,7 +10,8 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - MeatMadness
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 668639ea8a03915488dfcc366e23f086, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
